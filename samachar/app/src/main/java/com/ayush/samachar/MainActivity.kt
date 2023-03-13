@@ -3,42 +3,57 @@ package com.ayush.samachar
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
+import com.ayush.samachar.databinding.ActivityMainBinding
+import com.ayush.samachar.model.NEWS
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
+    lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding= ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+      binding.text.setOnClickListener {
+          Log.d("click", "onCreate: ")
+      }
         getnews()
     }
 
     private fun getnews() {
-        val news:Call<Newss> =Newsservice.newsinstance.getheadlines("in",1)
-        news.enqueue(object : Callback<Newss>{
-            /**
-             * Invoked for a received HTTP response.
-             *
-             *
-             * Note: An HTTP response may still indicate an application-level failure such as a 404 or 500.
-             * Call [Response.isSuccessful] to determine if the response indicates success.
-             */
-            override fun onResponse(call: Call<Newss>, response: Response<Newss>) {
-               val news:Newss? =response.body()
-                if(news!=null)
-                {
-                    Log.d("pqpqpq",news.toString())
-                }
+        val news= news_service.newsser.getheadlines("in",1)
+        news.enqueue(object : Callback<NEWS?>{
+            override fun onResponse(call: Call<NEWS?>, response: Response<NEWS?>) {
+               val new = response.body()
+               // val totalresult = response.body()!!.status
+                //val totalresult = response.body()!!.totalResults
+                //binding.text.text= totalresult.toString()
+                    if(new!=null)
+                    Log.d("sucess", "${new.status}")
             }
 
-            /**
-             * Invoked when a network exception occurred talking to the server or when an unexpected exception
-             * occurred creating the request or processing the response.
-             */
-            override fun onFailure(call: Call<Newss>, t: Throwable) {
-                Log.d("pqpqpq","Error in this code ",t)
+            override fun onFailure(call: Call<NEWS?>, t: Throwable) {
+                Log.d("fail  ", "onFailure: ")
             }
+
         })
+//        news.enqueue(object :Callback<NEWS>{
+//            override fun onResponse(call: Call<NEWS>, response: Response<NEWS>) {
+//                val news = response.body()
+//                if(news!=null)
+//                {
+//                    Log.e("sucess","Get the data ")
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<NEWS>, t: Throwable) {
+//                Log.e("fail done ","Error on displaying data",t)
+//            }
+//        })
     }
+
+
 }
